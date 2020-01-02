@@ -1,0 +1,97 @@
+----split----
+[1m[22m
+----split----
+write
+/rīt/
+
+verb
+[1m    mark (letters, words, or other symbols) on a surface, typically paper, with a pen, pencil, or similar implement.[22m
+        - "She led him to a clearing where a group of shaman chanted around a fire writing strange symbols in the smoke."
+    Synonyms: [1mput in writing[22m, [1mwrite down[22m, [1mjot down[22m, [1mput down[22m, [1mnote[22m, [1mtake down[22m, [1mrecord[22m, [1mregister[22m, [1mlog[22m, [1mlist[22m, [1minscribe[22m, [1msign[22m, [1mscribble[22m, [1mscrawl[22m, [1mpencil[22m
+
+[1m    compose, write, and send (a letter) to someone.[22m
+        - "Usually, all you need to do is send e-mail or write a letter to the company."
+    Synonyms: [1mcorrespond[22m, [1mwrite a letter[22m, [1mcommunicate[22m, [1mget/stay in touch[22m, [1mkeep in contact[22m, [1memail[22m, [1mdrop someone a line[22m
+
+[1m    compose (a text or work) for written or printed reproduction or publication; put into literary form and set down in writing.[22m
+        - "Aside from his published books, he wrote articles which bristled with wit."
+    Synonyms: [1mcompose[22m, [1mdraft[22m, [1mthink up[22m, [1mformulate[22m, [1mcompile[22m, [1mpen[22m, [1mdash off[22m, [1mproduce[22m
+
+[1m    enter (data) into a specified storage medium or location in store.[22m
+        - "Storage should write data to compliant volumes at the same speed as other volumes."
+
+[1m    underwrite (an insurance policy).[22m
+        - "Insurers write policies, thus transferring risks customers face to themselves."
+
+Synonyms
+    verb
+        - [1mput in writing[22m, [1mwrite down[22m, [1mjot down[22m, [1mput down[22m, [1mnote[22m, [1mtake down[22m, [1mrecord[22m, [1mregister[22m, [1mlog[22m, [1mlist[22m, [1minscribe[22m, [1msign[22m, [1mscribble[22m, [1mscrawl[22m, [1mpencil[22m
+        - [1mcorrespond[22m, [1mwrite a letter[22m, [1mcommunicate[22m, [1mget/stay in touch[22m, [1mkeep in contact[22m, [1memail[22m, [1mdrop someone a line[22m
+        - [1mcompose[22m, [1mdraft[22m, [1mthink up[22m, [1mformulate[22m, [1mcompile[22m, [1mpen[22m, [1mdash off[22m, [1mproduce[22m
+        - [1mdrop a line[22m
+        - [1mcompose[22m
+        - [1mindite[22m, [1mpen[22m, [1mcompose[22m
+        - [1mpublish[22m
+        - [1msave[22m
+        - [1mspell[22m
+
+Examples
+    - Figures published last week showed alarming gaps in children's ability to read and [4m[1mwrite[22m[24m.
+
+    - Contestants were chosen for musical aptitude, and most [4m[1mwrite[22m[24m songs and play instruments.
+
+    - I refuse to [4m[1mwrite[22m[24m a cheque for so small a sum when I can avoid it.
+
+    - There are still people leaving school without the ability to read or [4m[1mwrite[22m[24m.
+
+    - Imagine you could [4m[1mwrite[22m[24m cheques that were accepted as payment but never cashed.
+
+    - If all the water of the oceans became ink, it will not be enough to [4m[1mwrite[22m[24m the Greatness of Allah.
+
+    - He decided to [4m[1mwrite[22m[24m a letter of his own and to send regards from his crew.
+
+    - to [4m[1mwrite[22m[24m data to a disk
+
+    - Does your writing process change when you [4m[1mwrite[22m[24m a musical as opposed to the other plays you've crafted?
+
+    - If you pay on a normal credit bill and [4m[1mwrite[22m[24m a cheque or pay by giro, you can save up to a maximum of 13 per cent if you change to direct debit.
+
+    - To [4m[1mwrite[22m[24m the love of God above would drain the ocean dry.
+
+    - The majority of people stake claim based on their ability to read and [4m[1mwrite[22m[24m; they find it difficult to speak in English.
+
+    - The opportunity also facilitated mentoring students to [4m[1mwrite[22m[24m an article for publication.
+
+    - he had to [4m[1mwrite[22m[24ma check for $800
+
+    - We need to distribute leaflets, [4m[1mwrite[22m[24m letters, send faxes, talk to people, get the message across and change opinions.
+
+    - Even if a parent can't read or [4m[1mwrite[22m[24m themselves, they should put any personal embarrassment about their own literacy problems to one side and ensure that their child learns the skills.
+
+    - I'd always wanted to [4m[1mwrite[22m[24m
+
+    - If you don't have pieces of paper or placards, [4m[1mwrite[22m[24m these words on your hands and on your faces.
+
+    - There's no theory, so a simple ability to read and [4m[1mwrite[22m[24m is all you need.
+
+    - he couldn't read or [4m[1mwrite[22m[24m
+
+    - The head waitress asked Peter to [4m[1mwrite[22m[24m the word on a piece of paper.
+
+    - Recently he's also started to compose and [4m[1mwrite[22m[24m his own songs.
+
+    - you could [4m[1mwrite[22m[24m a book about this carry on
+
+    - I was invited to sit down and was immediately told who to [4m[1mwrite[22m[24m my cheque out to with a laminated sheet of details and conditions.
+
+    - he had to [4m[1mwrite[22m[24ma cheque for £800
+
+    - Apparently you can [4m[1mwrite[22m[24m cheques on anything, with anything.
+
+    - The act was formed two years ago when the girls were given an assignment to [4m[1mwrite[22m[24m a song with harmonies.
+
+    - Insurers [4m[1mwrite[22m[24m policies, thus transferring risks customers face to themselves.
+
+    - she can read and [4m[1mwrite[22m[24m
+
+    - The ability to read and [4m[1mwrite[22m[24m is the measure usually taken as a key indicator of a country's economic and social advancement.

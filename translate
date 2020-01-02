@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if ["$*" == ""]; then
+    exit
+else
+    echo "----split----" >> vocabulary.txt
+    trans "$*" |tee -a vocabulary.txt
+fi
