@@ -1,27 +1,14 @@
 ----split----
-reviving
+good
+/go͝od/
 
-复活
-(Fùhuó)
+好
+----split----
+print
+/print/
 
-Definitions of reviving
-[ English -> 简体中文 ]
+----split----
+staple
+/ˈstāpəl/
 
-verb
-  复活
-    revive, rise, resurrect, relive, reanimate, resurge
-  复兴
-    revive, restore, rebound, reconstruct, re-establish
-  复苏
-    revive, resuscitate, come to
-  复生
-    revive, resurge
-  再生
-    regenerate, revive
-  稣
-    revive, return to life, wake, awake, come to oneself, be resurrected
-  缓
-    delay, postpone, revive, put off
-
-reviving
-  复活, 复兴
+主食
