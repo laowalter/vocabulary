@@ -35,13 +35,17 @@ func readVoc(voc string) []Word {
 
 	var words []Word
 	var word Word
+	var tag = false
 	for n := 0; n < len(txtlines); n++ {
 		if txtlines[n] == SPLITLINE {
-			if n != 0 {
+			if tag {
 				words = append(words, word)
+				tag = false
 			}
 			n++
 			word.name = txtlines[n]
+			tag = true
+
 			continue
 		}
 		word.explain += txtlines[n]
