@@ -40,6 +40,7 @@ func readVoc(voc string) []Word {
 		if txtlines[n] == SPLITLINE {
 			if tag {
 				words = append(words, word)
+				word.explain = ""
 				tag = false
 			}
 			n++
