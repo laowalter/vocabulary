@@ -179,6 +179,11 @@ func main() {
 	if *initPtr {
 		/* Fist time use, build a new words.db in ~/.word/ */
 		home := os.Getenv("HOME")
+		err := os.MkdirAll(home, os.ModePerm)
+		if err != nil {
+			fmt.Printf("Can not create directory: %s ", home)
+		}
+
 		db := initDB(home + "/.word/words.db")
 		createTable(db)
 	} else if *storePtr {
