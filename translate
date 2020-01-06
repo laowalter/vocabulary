@@ -4,5 +4,5 @@ if [  $# -eq 0 ]; then
     exit
 else
     echo "----split----" >> vocabulary.txt
-    trans "$*" |tee -a vocabulary.txt
+    trans "$*" | tee -a vocabulary.txt
 fi
