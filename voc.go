@@ -25,11 +25,13 @@ type Word struct {
 func initDB(filePath string) *sql.DB {
 	db, err := sql.Open("sqlite3", filePath)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Oops! Database %s already exist", filePath)
+		return db
 	}
 	if db == nil {
 		panic("db nil")
 	}
+	fmt.Printf("Database %s created!\n", filePath)
 	return db
 }
 
@@ -42,12 +44,14 @@ func createTable(db *sql.DB) {
     createdate text DEFAULT (STRFTIME('%Y-%m-%d', 'NOW')),
     lastreviewdate text DEFAULT (STRFTIME('%Y-%m-%d', 'NOW')),
     reviewstatus INT DEFAULT 0,
-    PRIMARY KEY(word, lastreviewdate);
-	`
+    PRIMARY KEY(word, lastreviewdate)
+	);`
 	_, err := db.Exec(sql_table)
 	if err != nil {
-		panic(err)
+		fmt.Println("Table already exist.")
+		return
 	}
+	fmt.Println("Table words created!")
 }
 
 func readVoc(voc string) []Word {
@@ -173,14 +177,17 @@ func main() {
 	initPtr := flag.Bool("init", false, "Init Local database in ~/.word/words.db")
 	flag.Parse()
 	if *initPtr {
-		db := initDB("~/./word/words.db")
+		/* Fist time use, build a new words.db in ~/.word/ */
+		home := os.Getenv("HOME")
+		db := initDB(home + "/.word/words.db")
 		createTable(db)
-
 	} else if *storePtr {
+		/* store all the vocabulary from voc.txt to database */
 		var words []Word
 		words = readVoc(VOCABULARYFILE)
 		dbStore(words)
 	} else {
+		/* Review voc */
 		readDB()
 	}
 }
