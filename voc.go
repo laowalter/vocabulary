@@ -12,9 +12,8 @@ import (
 )
 
 const (
-	SPLITLINE      string = "----split----"
-	VOCABULARYFILE string = "../vocabulary.txt"
-	DB             string = "../words.db"
+	SPLITLINE string = "----split----"
+	DB        string = "../words.db"
 )
 
 type Word struct {
@@ -91,8 +90,13 @@ func readVoc(voc string) []Word {
 		word.trans += "\n"
 	}
 	words = append(words, word)
+	err = os.Remove(voc)
+	if err != nil {
+		fmt.Printf("Opps!!! Cannot delete file: %s\n", voc)
+	} else {
+		fmt.Printf("File: %s removed.\n", voc)
+	}
 	return words
-
 }
 
 func checkRecord(word string) bool {
@@ -176,9 +180,10 @@ func main() {
 	storePtr := flag.Bool("store", false, "Store new words to Database")
 	initPtr := flag.Bool("init", false, "Init Local database in ~/.word/words.db")
 	flag.Parse()
+
+	home := os.Getenv("HOME")
 	if *initPtr {
 		/* Fist time use, build a new words.db in ~/.word/ */
-		home := os.Getenv("HOME")
 		err := os.MkdirAll(home, os.ModePerm)
 		if err != nil {
 			fmt.Printf("Can not create directory: %s ", home)
@@ -186,11 +191,13 @@ func main() {
 
 		db := initDB(home + "/.word/words.db")
 		createTable(db)
+
 	} else if *storePtr {
 		/* store all the vocabulary from voc.txt to database */
 		var words []Word
-		words = readVoc(VOCABULARYFILE)
+		words = readVoc(home + "/.word/vocabulary.txt")
 		dbStore(words)
+
 	} else {
 		/* Review voc */
 		readDB()
