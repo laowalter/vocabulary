@@ -13,8 +13,9 @@ import (
 
 const (
 	SPLITLINE string = "----split----"
-	DB        string = "../words.db"
 )
+
+var dbFullPath string
 
 type Word struct {
 	name  string
@@ -100,8 +101,8 @@ func readVoc(voc string) []Word {
 }
 
 func checkRecord(word string) bool {
-	/* check if a word.name exist in DB */
-	db, err := sql.Open("sqlite3", DB)
+	/* check if a word.name exist in dbFullPath */
+	db, err := sql.Open("sqlite3", dbFullPath)
 	if err != nil {
 		panic(err)
 	}
@@ -119,7 +120,7 @@ func checkRecord(word string) bool {
 
 func dbStore(words []Word) {
 	/* store words list to word.db */
-	db, err := sql.Open("sqlite3", DB)
+	db, err := sql.Open("sqlite3", dbFullPath)
 	if err != nil {
 		panic(err)
 	}
@@ -151,7 +152,7 @@ func dbStore(words []Word) {
 
 func readDB() {
 	/* read words from table word of current date */
-	db, err := sql.Open("sqlite3", DB)
+	db, err := sql.Open("sqlite3", dbFullPath)
 	if err != nil {
 		panic(err)
 	}
@@ -181,21 +182,23 @@ func main() {
 	initPtr := flag.Bool("init", false, "Init Local database in ~/.word/words.db")
 	flag.Parse()
 
-	home := os.Getenv("HOME")
+	homeFullPath := os.Getenv("HOME")
+	dbFullPath = homeFullPath + "/.word/words.db"
+
 	if *initPtr {
 		/* Fist time use, build a new words.db in ~/.word/ */
-		err := os.MkdirAll(home, os.ModePerm)
+		err := os.MkdirAll(homeFullPath, os.ModePerm)
 		if err != nil {
-			fmt.Printf("Can not create directory: %s ", home)
+			fmt.Printf("Can not create directory: %s ", homeFullPath)
 		}
 
-		db := initDB(home + "/.word/words.db")
+		db := initDB(dbFullPath)
 		createTable(db)
 
 	} else if *storePtr {
 		/* store all the vocabulary from voc.txt to database */
 		var words []Word
-		words = readVoc(home + "/.word/vocabulary.txt")
+		words = readVoc(homeFullPath + "/.word/vocabulary.txt")
 		dbStore(words)
 
 	} else {
