@@ -3,6 +3,6 @@
 if [  $# -eq 0 ]; then
     exit
 else
-    echo "----split----" >> vocabulary.txt
-    trans "$*" | tee -a vocabulary.txt
+    echo "----split----" >> ~/.word/vocabulary.txt
+    trans "$*" | tee -a ~/.word/vocabulary.txt
 fi

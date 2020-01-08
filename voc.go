@@ -16,6 +16,7 @@ const (
 )
 
 var dbFullPath string
+var fib = [13]int{1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233}
 
 type Word struct {
 	name  string
@@ -173,7 +174,7 @@ func readDB() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(word, trans)
+		fmt.Printf("------------\nWORD: %s\n\nTRANSLATION: %s\n", word, trans)
 	}
 }
 
