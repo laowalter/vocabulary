@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"github.com/eiannone/keyboard"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
@@ -21,6 +22,14 @@ var fib = [13]int{1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233}
 type Word struct {
 	name  string
 	trans string
+}
+
+type WordTableRow struct {
+	word           string
+	trans          string
+	createDate     string
+	nextReviewDate string
+	reviewStatus   int
 }
 
 func initDB(filePath string) *sql.DB {
@@ -43,7 +52,7 @@ func createTable(db *sql.DB) {
     word text NOT NULL,
     translation text NOT NULL,
     createdate text DEFAULT (STRFTIME('%Y-%m-%d', 'NOW')),
-    lastreviewdate text DEFAULT (STRFTIME('%Y-%m-%d', 'NOW')),
+	nextreviewdate text DEFAULT (STRFTIME('%Y-%m-%d', 'NOW')),
     reviewstatus INT DEFAULT 0,
     PRIMARY KEY(word, lastreviewdate)
 	);`
@@ -151,7 +160,7 @@ func dbStore(words []Word) {
 	}
 }
 
-func readDB() {
+func readDB() []WordTableRow {
 	/* read words from table word of current date */
 	db, err := sql.Open("sqlite3", dbFullPath)
 	if err != nil {
@@ -159,23 +168,45 @@ func readDB() {
 	}
 
 	date := time.Now().Format("2006-01-02")
-	rows, err := db.Query("select * from words where lastreviewdate = ?", date)
+	rows, err := db.Query("select * from words where nextreviewdate <= ?", date)
 	if err != nil {
 		panic(err)
 	}
 
+	var wordRecords []WordTableRow
 	for rows.Next() {
-		var word string
-		var trans string
-		var createdate string
-		var lastreviewdate string
-		var reviewstatus int
-		err = rows.Scan(&word, &trans, &createdate, &lastreviewdate, &reviewstatus)
+		var record WordTableRow
+		err = rows.Scan(&record.word, &record.trans, &record.createDate, &record.nextReviewDate, &record.reviewStatus)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("------------\nWORD: %s\n\nTRANSLATION: %s\n", word, trans)
+		wordRecords = append(wordRecords, record)
 	}
+	return wordRecords
+}
+
+func review(wordList []WordTableRow) {
+	for _, rec := range wordList {
+		fmt.Printf("New Word: %s\n\n", rec.word)
+		fmt.Print("Press SPACE key for translation\n")
+		for {
+			char, _, err := keyboard.GetSingleKey()
+			if err != nil {
+				panic(err)
+			}
+			if char == '\x00' {
+				fmt.Printf("Translatioin: %s\n-----------------\n\n", rec.trans)
+				break
+			} else if char == 'p' {
+				/* change nextReviewDate */
+				fmt.Println("Will change nextReviewDate in DB\n")
+
+			} else if char == 'q' {
+				os.Exit(1)
+			}
+		}
+	}
+
 }
 
 func main() {
@@ -204,6 +235,8 @@ func main() {
 
 	} else {
 		/* Review voc */
-		readDB()
+		wordList := readDB()
+		review(wordList)
+
 	}
 }
