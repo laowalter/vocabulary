@@ -16,3 +16,27 @@
     :no-ansi        true
 }
 
+
+### 使用方法：
+
+
+1. 首次使用 voc --init
+
+2. 日常使用 
+
+	1. 查询  
+	```
+	translate Ural Mountains
+	```
+
+	2. 存入数据库
+	```
+	voc --store
+	```
+    3. 复习
+	```
+	voc
+	```
+		1. 如果觉得记住了，就点击 p ,进入下一轮记忆；
+		2. space 显示翻译。
+

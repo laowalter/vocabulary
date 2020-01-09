@@ -221,21 +221,29 @@ func updateTable(db *sql.DB, rec WordTableRow) {
 
 func review(db *sql.DB, wordList []WordTableRow) {
 	for _, rec := range wordList {
-		fmt.Printf("%s | %s\n\n", Red(rec.word), Red(strings.ToUpper(rec.word)))
-		//fmt.Print("Press SPACE key for translation\n")
-		for {
-			char, _, err := keyboard.GetSingleKey()
-			if err != nil {
-				panic(err)
+		fmt.Printf("\n%s | %s\n\n", Red(rec.word), Red(strings.ToUpper(rec.word)))
+		char, _, err := keyboard.GetSingleKey()
+		if err != nil {
+			panic(err)
+		}
+		if char == '\x00' {
+			fmt.Printf("%s\n-----------------\n\n", Green(rec.trans))
+			for {
+				char, _, err = keyboard.GetSingleKey()
+				if err != nil {
+					panic(err)
+				}
+				if char == 'p' {
+					updateTable(db, rec) //change nextReviewDate
+				} else if char == '\x00' {
+					break
+				} else if char == 'q' {
+					os.Exit(1)
+				}
 			}
-			if char == '\x00' {
-				fmt.Printf("%s\n-----------------\n\n", Green(rec.trans))
-				break
-			} else if char == 'p' {
-				updateTable(db, rec) //change nextReviewDate
-			} else if char == 'q' {
-				os.Exit(1)
-			}
+
+		} else if char == 'q' {
+			os.Exit(1)
 		}
 	}
 
