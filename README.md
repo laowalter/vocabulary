@@ -27,17 +27,17 @@ voc用来平日记忆英文单词用，把需要查询到单词用translate命�
 
 	1. 查询  
 	```
-	translate Ural Mountains
+	$ translate Ural Mountains
 	```
 
 	2. 存入数据库
 	```
-	voc --store
+	$ voc --store
 	```
     3. 复习
 	```
-	voc
+	$ voc
 	```
-		1. 如果觉得记住了，就点击 p ,进入下一轮记忆；
+		1. 如果觉得记住了，就点击 p ,进入下一轮记忆, 本日不再显示；
 		2. space 显示翻译。
 
