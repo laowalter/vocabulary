@@ -17,8 +17,16 @@ voc用来平日记忆英文单词用，把需要查询到单词用translate命�
     :no-ansi        true
 }
 
+### 安装方法
 
-### 使用方法：
+```
+$ sudo emerge -avq translate-shell
+$ go get github.com/laowalter/vocabulary
+$ cd ${GOPATH}/laowalter/vocabulary/
+$ go build
+```
+
+### 使用方法
 
 
 1. 首次使用 voc --init
