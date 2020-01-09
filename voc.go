@@ -18,11 +18,9 @@ const (
 	SPLITLINE string = "----split----"
 )
 
-var dbFullPath string
-
-//var fib = [14]string{"0", "1", "1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "144", "233"}
-var fib = [14]int{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233}
-var voc string
+var dbFullPath string                                                //sqlite database
+var fib = [14]int{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233} //review statergy
+var voc string                                                       //vocabulary.txt file
 
 type Word struct {
 	name  string
@@ -223,7 +221,7 @@ func updateTable(db *sql.DB, rec WordTableRow) {
 
 func review(db *sql.DB, wordList []WordTableRow) {
 	for _, rec := range wordList {
-		fmt.Printf("New Word: %s | %s\n\n", Red(rec.word), Red(strings.ToUpper(rec.word)))
+		fmt.Printf("%s | %s\n\n", Red(rec.word), Red(strings.ToUpper(rec.word)))
 		//fmt.Print("Press SPACE key for translation\n")
 		for {
 			char, _, err := keyboard.GetSingleKey()
@@ -234,10 +232,7 @@ func review(db *sql.DB, wordList []WordTableRow) {
 				fmt.Printf("%s\n-----------------\n\n", Green(rec.trans))
 				break
 			} else if char == 'p' {
-				/* change nextReviewDate */
-				//fmt.Printf("Pass to the next Round\n")
-				updateTable(db, rec)
-
+				updateTable(db, rec) //change nextReviewDate
 			} else if char == 'q' {
 				os.Exit(1)
 			}
