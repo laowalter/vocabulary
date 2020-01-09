@@ -22,7 +22,7 @@ voc用来平日记忆英文单词用，把需要查询到单词用translate命�
 ```
 $ sudo emerge -avq translate-shell
 $ go get github.com/laowalter/vocabulary
-$ cd ${GOPATH}/laowalter/vocabulary/
+$ cd ${GOPATH}/github.com/laowalter/vocabulary/
 $ go build
 ```
 
