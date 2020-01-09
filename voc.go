@@ -6,9 +6,11 @@ import (
 	"flag"
 	"fmt"
 	"github.com/eiannone/keyboard"
+	. "github.com/logrusorgru/aurora"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -187,19 +189,19 @@ func readDB() []WordTableRow {
 
 func review(wordList []WordTableRow) {
 	for _, rec := range wordList {
-		fmt.Printf("New Word: %s\n\n", rec.word)
-		fmt.Print("Press SPACE key for translation\n")
+		fmt.Printf("New Word: %s  %s\n\n", Red(rec.word), Red(strings.ToUpper(rec.word)))
+		//fmt.Print("Press SPACE key for translation\n")
 		for {
 			char, _, err := keyboard.GetSingleKey()
 			if err != nil {
 				panic(err)
 			}
 			if char == '\x00' {
-				fmt.Printf("Translatioin: %s\n-----------------\n\n", rec.trans)
+				fmt.Printf("%s\n-----------------\n\n", Green(rec.trans))
 				break
 			} else if char == 'p' {
 				/* change nextReviewDate */
-				fmt.Println("Will change nextReviewDate in DB\n")
+				fmt.Printf("Will change nextReviewDate in DB\n")
 
 			} else if char == 'q' {
 				os.Exit(1)
