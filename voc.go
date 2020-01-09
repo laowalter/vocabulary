@@ -208,7 +208,7 @@ func readDB(db *sql.DB) []WordTableRow {
 func updateTable(db *sql.DB, rec WordTableRow) {
 	rec.reviewStatus += 1
 	nextDay := time.Now().AddDate(0, 0, fib[rec.reviewStatus])
-	fmt.Println(nextDay)
+	fmt.Printf("Will review on %s\n", nextDay.Format("2006-01-02"))
 	stmt, err := db.Prepare(`UPDATE words SET nextreviewdate = ?, reviewstatus = ?  WHERE word = ?`)
 	if err != nil {
 		fmt.Println("Update Prepare Error")
@@ -235,7 +235,7 @@ func review(db *sql.DB, wordList []WordTableRow) {
 				break
 			} else if char == 'p' {
 				/* change nextReviewDate */
-				fmt.Printf("Pass to the next Round\n")
+				//fmt.Printf("Pass to the next Round\n")
 				updateTable(db, rec)
 
 			} else if char == 'q' {
