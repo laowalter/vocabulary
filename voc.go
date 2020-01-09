@@ -19,7 +19,10 @@ const (
 )
 
 var dbFullPath string
-var fib = [13]int{1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233}
+
+//var fib = [14]string{"0", "1", "1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "144", "233"}
+var fib = [14]int{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233}
+var voc string
 
 type Word struct {
 	name  string
@@ -56,14 +59,16 @@ func createTable(db *sql.DB) {
     createdate text DEFAULT (STRFTIME('%Y-%m-%d', 'NOW')),
 	nextreviewdate text DEFAULT (STRFTIME('%Y-%m-%d', 'NOW')),
     reviewstatus INT DEFAULT 0,
-    PRIMARY KEY(word, lastreviewdate)
+    PRIMARY KEY(word, nextreviewdate)
 	);`
 	_, err := db.Exec(sql_table)
 	if err != nil {
 		fmt.Println("Table already exist.")
 		return
+	} else {
+		fmt.Println("Table words created!")
+		return
 	}
-	fmt.Println("Table words created!")
 }
 
 func readVoc(voc string) []Word {
@@ -103,13 +108,26 @@ func readVoc(voc string) []Word {
 		word.trans += "\n"
 	}
 	words = append(words, word)
-	err = os.Remove(voc)
+	return words
+}
+
+func creatVoc(voc string) {
+	emptyFile, err := os.Create(voc)
+	if err != nil {
+		fmt.Printf("Oops, can not creat %s", voc)
+		panic(err)
+	}
+	emptyFile.Close()
+	fmt.Printf("%s created!\n", voc)
+}
+
+func removeVoc(voc string) {
+	err := os.Remove(voc)
 	if err != nil {
 		fmt.Printf("Opps!!! Cannot delete file: %s\n", voc)
 	} else {
 		fmt.Printf("File: %s removed.\n", voc)
 	}
-	return words
 }
 
 func checkRecord(word string) bool {
@@ -130,13 +148,8 @@ func checkRecord(word string) bool {
 	return true
 }
 
-func dbStore(words []Word) {
+func dbStore(db *sql.DB, words []Word) {
 	/* store words list to word.db */
-	db, err := sql.Open("sqlite3", dbFullPath)
-	if err != nil {
-		panic(err)
-	}
-
 	for _, word := range words {
 
 		if checkRecord(word.name) {
@@ -144,7 +157,7 @@ func dbStore(words []Word) {
 			continue
 		}
 
-		stmt, err := db.Prepare("INSERT INTO words(word, translation, createdate, lastreviewdate, reviewstatus) values(?,?,?,?,?)")
+		stmt, err := db.Prepare("INSERT INTO words(word, translation, createdate, nextreviewdate, reviewstatus) values(?,?,?,?,?)")
 		if err != nil {
 			panic(err)
 		}
@@ -159,15 +172,20 @@ func dbStore(words []Word) {
 			panic(err)
 		}
 		fmt.Printf("Inserted Word: %s with RowID: %d\n", word.name, rowId)
+		removeVoc(voc)
 	}
 }
 
-func readDB() []WordTableRow {
-	/* read words from table word of current date */
+func openDB(dfFullPath string) *sql.DB {
 	db, err := sql.Open("sqlite3", dbFullPath)
 	if err != nil {
 		panic(err)
 	}
+	return db
+}
+
+func readDB(db *sql.DB) []WordTableRow {
+	/* read words from table word of current date */
 
 	date := time.Now().Format("2006-01-02")
 	rows, err := db.Query("select * from words where nextreviewdate <= ?", date)
@@ -187,9 +205,25 @@ func readDB() []WordTableRow {
 	return wordRecords
 }
 
-func review(wordList []WordTableRow) {
+func updateTable(db *sql.DB, rec WordTableRow) {
+	rec.reviewStatus += 1
+	nextDay := time.Now().AddDate(0, 0, fib[rec.reviewStatus])
+	fmt.Println(nextDay)
+	stmt, err := db.Prepare(`UPDATE words SET nextreviewdate = ?, reviewstatus = ?  WHERE word = ?`)
+	if err != nil {
+		fmt.Println("Update Prepare Error")
+		panic(err)
+	}
+	_, err = stmt.Exec(nextDay.Format("2006-01-02"), rec.reviewStatus, rec.word)
+	if err != nil {
+		fmt.Printf("Can not update %s's nextreview and reviewstatus", rec.word)
+	}
+	return
+}
+
+func review(db *sql.DB, wordList []WordTableRow) {
 	for _, rec := range wordList {
-		fmt.Printf("New Word: %s  %s\n\n", Red(rec.word), Red(strings.ToUpper(rec.word)))
+		fmt.Printf("New Word: %s | %s\n\n", Red(rec.word), Red(strings.ToUpper(rec.word)))
 		//fmt.Print("Press SPACE key for translation\n")
 		for {
 			char, _, err := keyboard.GetSingleKey()
@@ -201,7 +235,8 @@ func review(wordList []WordTableRow) {
 				break
 			} else if char == 'p' {
 				/* change nextReviewDate */
-				fmt.Printf("Will change nextReviewDate in DB\n")
+				fmt.Printf("Pass to the next Round\n")
+				updateTable(db, rec)
 
 			} else if char == 'q' {
 				os.Exit(1)
@@ -216,8 +251,9 @@ func main() {
 	initPtr := flag.Bool("init", false, "Init Local database in ~/.word/words.db")
 	flag.Parse()
 
-	homeFullPath := os.Getenv("HOME")
-	dbFullPath = homeFullPath + "/.word/words.db"
+	homeFullPath := os.Getenv("HOME") + "/.word"
+	dbFullPath = homeFullPath + "/words.db"
+	voc = homeFullPath + "/vocabulary.txt"
 
 	if *initPtr {
 		/* Fist time use, build a new words.db in ~/.word/ */
@@ -228,17 +264,20 @@ func main() {
 
 		db := initDB(dbFullPath)
 		createTable(db)
+		creatVoc(voc)
 
 	} else if *storePtr {
 		/* store all the vocabulary from voc.txt to database */
 		var words []Word
-		words = readVoc(homeFullPath + "/.word/vocabulary.txt")
-		dbStore(words)
+		words = readVoc(voc)
+		db := openDB(dbFullPath)
+		dbStore(db, words)
 
 	} else {
 		/* Review voc */
-		wordList := readDB()
-		review(wordList)
+		db := openDB(dbFullPath)
+		wordList := readDB(db)
+		review(db, wordList)
 
 	}
 }
