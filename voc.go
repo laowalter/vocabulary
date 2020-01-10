@@ -203,7 +203,7 @@ func readDB(db *sql.DB) []WordTableRow {
 	return wordRecords
 }
 
-func updateRecord(db *sql.DB, rec WordTableRow) {
+func updateNextReviewDate(db *sql.DB, rec WordTableRow) {
 	rec.reviewStatus += 1
 	nextDay := time.Now().AddDate(0, 0, fib[rec.reviewStatus])
 	fmt.Printf("Will review on %s\n", nextDay.Format("2006-01-02"))
@@ -216,6 +216,35 @@ func updateRecord(db *sql.DB, rec WordTableRow) {
 	if err != nil {
 		fmt.Printf("Can not update %s's nextreview and reviewstatus", rec.word)
 	}
+	return
+}
+
+func modifyWordRecord(db *sql.DB, rec WordTableRow) {
+	/* Only change a word in DB, for example change pl gaffes to gaffe */
+	stmt, err := db.Prepare(`UPDATE words SET word = ? WHERE word = ?`)
+	if err != nil {
+		fmt.Printf("Can not prepare modify the word %s", Cyan(rec.word))
+		panic(err)
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("Please input the new word for %s: ", rec.word)
+	newWord, _ := reader.ReadString('\n')
+	newWord = strings.TrimSuffix(newWord, "\n")
+	newWord = strings.Trim(newWord, " ")
+
+	if newWord == "" {
+		fmt.Printf("You did not input anything.")
+		return
+	}
+
+	_, err = stmt.Exec(newWord, rec.word)
+	if err != nil {
+		fmt.Printf("Can not modify the word %s", Cyan(rec.word))
+		panic(err)
+	}
+
+	fmt.Printf("The word %s replaced by %s ", Cyan(rec.word), Red(newWord))
 	return
 }
 
@@ -256,7 +285,7 @@ func review(db *sql.DB, wordList []WordTableRow) {
 					panic(err)
 				}
 				if char == 'p' { // pass after trans displayed
-					updateRecord(db, wordList[index]) //change nextReviewDate
+					updateNextReviewDate(db, wordList[index]) //change nextReviewDate
 					index += 1
 					break
 				} else if char == 'd' {
@@ -280,7 +309,7 @@ func review(db *sql.DB, wordList []WordTableRow) {
 			}
 
 		} else if char == 'p' { // pass before trans displayed
-			updateRecord(db, wordList[index]) //change nextReviewDate
+			updateNextReviewDate(db, wordList[index]) //change nextReviewDate
 			if index >= wordsLength-1 {
 				return
 			} else {
@@ -288,7 +317,12 @@ func review(db *sql.DB, wordList []WordTableRow) {
 			}
 
 		} else if char == 'm' { // modified the current word after a the word displayed
-
+			modifyWordRecord(db, wordList[index])
+			if index >= wordsLength-1 {
+				return
+			} else {
+				index += 1
+			}
 		} else if char == 'd' { // delete the current word (after the word displayed)
 			deleteRecord(db, wordList[index])
 			if index >= wordsLength-1 {
