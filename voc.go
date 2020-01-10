@@ -223,7 +223,7 @@ func modifyWordRecord(db *sql.DB, rec WordTableRow) {
 	/* Only change a word in DB, for example change pl gaffes to gaffe */
 	stmt, err := db.Prepare(`UPDATE words SET word = ? WHERE word = ?`)
 	if err != nil {
-		fmt.Printf("Can not prepare modify the word %s", Cyan(rec.word))
+		fmt.Printf("Can not prepare modify the word %s\n", Cyan(rec.word))
 		panic(err)
 	}
 
@@ -234,17 +234,17 @@ func modifyWordRecord(db *sql.DB, rec WordTableRow) {
 	newWord = strings.Trim(newWord, " ")
 
 	if newWord == "" {
-		fmt.Printf("You did not input anything.")
+		fmt.Println("You did not input anything.")
 		return
 	}
 
 	_, err = stmt.Exec(newWord, rec.word)
 	if err != nil {
-		fmt.Printf("Can not modify the word %s", Cyan(rec.word))
+		fmt.Printf("Can not modify the word %s \n", Cyan(rec.word))
 		panic(err)
 	}
 
-	fmt.Printf("The word %s replaced by %s ", Cyan(rec.word), Red(newWord))
+	fmt.Printf("The word %s replaced by %s \n", Cyan(rec.word), Red(newWord))
 	return
 }
 
@@ -290,6 +290,13 @@ func review(db *sql.DB, wordList []WordTableRow) {
 					break
 				} else if char == 'd' {
 					deleteRecord(db, wordList[index])
+					if index >= wordsLength-1 {
+						return
+					} else {
+						index += 1
+					}
+				} else if char == 'm' {
+					modifyWordRecord(db, wordList[index])
 					if index >= wordsLength-1 {
 						return
 					} else {
