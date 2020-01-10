@@ -229,39 +229,78 @@ func deleteRecord(db *sql.DB, rec WordTableRow) {
 		fmt.Printf("Can not delete record: %s", rec.word)
 		panic(err)
 	}
+	fmt.Printf("Word: %s removed from remember database\n", Cyan(rec.word))
 	return
 }
 
 func review(db *sql.DB, wordList []WordTableRow) {
 	wordsLength := len(wordList)
-	for index, rec := range wordList {
-		//num := index + 1
-		fmt.Printf("\n(%d/%d): %s | %s\n\n", Cyan(index+1), Cyan(wordsLength), Red(rec.word), Red(strings.ToUpper(rec.word)))
+
+	if wordsLength == 0 {
+		return
+	}
+
+	index := 0
+	for {
+
+		fmt.Printf("\n(%d/%d): %s | %s\n\n", Cyan(index+1), Cyan(wordsLength), Red(wordList[index].word), Red(strings.ToUpper(wordList[index].word)))
 		char, _, err := keyboard.GetSingleKey()
 		if err != nil {
 			panic(err)
 		}
 		if char == '\x00' {
-			fmt.Printf("%s\n-----------------\n\n", Green(rec.trans))
+			fmt.Printf("%s\n-----------------\n\n", Green(wordList[index].trans))
 			for {
 				char, _, err = keyboard.GetSingleKey()
 				if err != nil {
 					panic(err)
 				}
-				if char == 'p' {
-					updateRecord(db, rec) //change nextReviewDate
-				} else if char == '\x00' {
+				if char == 'p' { // pass after trans displayed
+					updateRecord(db, wordList[index]) //change nextReviewDate
+					index += 1
 					break
-				} else if char == 'q' {
-					os.Exit(1)
+				} else if char == 'd' {
+					deleteRecord(db, wordList[index])
+					if index >= wordsLength-1 {
+						return
+					} else {
+						index += 1
+					}
+				} else if char == '\x00' {
+					if index < wordsLength-1 {
+						index += 1
+						break
+					} else {
+						return
+					}
+				} else if char == 'q' { // exit at any time
+					return
 				}
+				break
 			}
 
-		} else if char == 'q' {
-			os.Exit(1)
+		} else if char == 'p' { // pass before trans displayed
+			updateRecord(db, wordList[index]) //change nextReviewDate
+			if index >= wordsLength-1 {
+				return
+			} else {
+				index += 1
+			}
+
+		} else if char == 'm' { // modified the current word after a the word displayed
+
+		} else if char == 'd' { // delete the current word (after the word displayed)
+			deleteRecord(db, wordList[index])
+			if index >= wordsLength-1 {
+				return
+			} else {
+				index += 1
+			}
+
+		} else if char == 'q' { // exit
+			return
 		}
 	}
-
 }
 
 func main() {
