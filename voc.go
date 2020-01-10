@@ -220,8 +220,10 @@ func updateTable(db *sql.DB, rec WordTableRow) {
 }
 
 func review(db *sql.DB, wordList []WordTableRow) {
-	for _, rec := range wordList {
-		fmt.Printf("\n%s | %s\n\n", Red(rec.word), Red(strings.ToUpper(rec.word)))
+	wordsLength := len(wordList)
+	for index, rec := range wordList {
+		//num := index + 1
+		fmt.Printf("\n(%d/%d): %s | %s\n\n", Cyan(index+1), Cyan(wordsLength), Red(rec.word), Red(strings.ToUpper(rec.word)))
 		char, _, err := keyboard.GetSingleKey()
 		if err != nil {
 			panic(err)
