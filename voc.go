@@ -203,7 +203,7 @@ func readDB(db *sql.DB) []WordTableRow {
 	return wordRecords
 }
 
-func updateTable(db *sql.DB, rec WordTableRow) {
+func updateRecord(db *sql.DB, rec WordTableRow) {
 	rec.reviewStatus += 1
 	nextDay := time.Now().AddDate(0, 0, fib[rec.reviewStatus])
 	fmt.Printf("Will review on %s\n", nextDay.Format("2006-01-02"))
@@ -215,6 +215,19 @@ func updateTable(db *sql.DB, rec WordTableRow) {
 	_, err = stmt.Exec(nextDay.Format("2006-01-02"), rec.reviewStatus, rec.word)
 	if err != nil {
 		fmt.Printf("Can not update %s's nextreview and reviewstatus", rec.word)
+	}
+	return
+}
+
+func deleteRecord(db *sql.DB, rec WordTableRow) {
+	stmt, err := db.Prepare(`DELETE FROM words WHERE word == ?`)
+	if err != nil {
+		panic(err)
+	}
+	_, err = stmt.Exec(rec.word)
+	if err != nil {
+		fmt.Printf("Can not delete record: %s", rec.word)
+		panic(err)
 	}
 	return
 }
@@ -236,7 +249,7 @@ func review(db *sql.DB, wordList []WordTableRow) {
 					panic(err)
 				}
 				if char == 'p' {
-					updateTable(db, rec) //change nextReviewDate
+					updateRecord(db, rec) //change nextReviewDate
 				} else if char == '\x00' {
 					break
 				} else if char == 'q' {
