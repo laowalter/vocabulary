@@ -17,16 +17,24 @@ voc用来平日记忆英文单词用，把需要查询到单词用translate命�
     :user-agent     "Mozilla/5.0 (X11; Linux x86_64; rv:33.0) Gecko/20100101 Firefox/63.0"
     :no-ansi        true
 }
-
+```
 
 ### 安装方法
 
+#### 源码安装
 ```
 $ sudo emerge -avq translate-shell
 $ go get github.com/laowalter/vocabulary
 $ cd ${GOPATH}/src/github.com/laowalter/vocabulary/
 $ go build
 ```
+
+#### 直接下载可执行文件
+
+
+1. 安装translate-shell
+2. 直接下载 voc 和 translate 两个文件。
+
 
 ### 使用方法
 
