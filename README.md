@@ -8,6 +8,7 @@ voc用来平日记忆英文单词用，把需要查询到单词用translate命�
 * 依赖的程序 translate-shell, 其配置文件如下：
 
 ~/.translate-shell/init.trans
+```
 {
     :show-original  true
     :indent         2
@@ -16,6 +17,7 @@ voc用来平日记忆英文单词用，把需要查询到单词用translate命�
     :user-agent     "Mozilla/5.0 (X11; Linux x86_64; rv:33.0) Gecko/20100101 Firefox/63.0"
     :no-ansi        true
 }
+
 
 ### 安装方法
 
