@@ -146,7 +146,7 @@ func checkRecord(word string) bool {
 	return true
 }
 
-func dbStore(db *sql.DB, words []Word) {
+func storeDB(db *sql.DB, words []Word) {
 	/* store words list to word.db */
 	for _, word := range words {
 
@@ -170,8 +170,9 @@ func dbStore(db *sql.DB, words []Word) {
 			panic(err)
 		}
 		fmt.Printf("Inserted Word: %s with RowID: %d\n", word.name, rowId)
-		removeVoc(voc)
 	}
+	removeVoc(voc)
+	return
 }
 
 func openDB(dfFullPath string) *sql.DB {
@@ -286,8 +287,12 @@ func review(db *sql.DB, wordList []WordTableRow) {
 				}
 				if char == 'p' { // pass after trans displayed
 					updateNextReviewDate(db, wordList[index]) //change nextReviewDate
-					index += 1
-					break
+					if index >= wordsLength-1 {
+						return
+					} else {
+						index += 1
+						break
+					}
 				} else if char == 'd' {
 					deleteRecord(db, wordList[index])
 					if index >= wordsLength-1 {
@@ -303,11 +308,11 @@ func review(db *sql.DB, wordList []WordTableRow) {
 						index += 1
 					}
 				} else if char == '\x00' {
-					if index < wordsLength-1 {
+					if index >= wordsLength-1 {
+						return
+					} else {
 						index += 1
 						break
-					} else {
-						return
 					}
 				} else if char == 'q' { // exit at any time
 					return
@@ -369,7 +374,7 @@ func main() {
 		var words []Word
 		words = readVoc(voc)
 		db := openDB(dbFullPath)
-		dbStore(db, words)
+		storeDB(db, words)
 
 	} else {
 		/* Review voc */
