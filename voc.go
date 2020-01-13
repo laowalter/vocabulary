@@ -152,7 +152,7 @@ func storeDB(db *sql.DB, words []Word) {
 	for _, word := range words {
 		if checkRecord(word.name) {
 			fmt.Printf("Word: %s already exist\n", word.name)
-			resetNextReviewDate(db, word.name)
+			resetWord(db, word.name)
 			fmt.Printf("Word: %s is %s as today's new word.\n", Cyan(word.name), Red("Reset"))
 			continue
 		}
@@ -222,7 +222,7 @@ func updateNextReviewDate(db *sql.DB, rec WordTableRow) {
 	return
 }
 
-func resetNextReviewDate(db *sql.DB, word string) {
+func resetWord(db *sql.DB, word string) {
 	reviewStatus := 0                       //reset to the first review status
 	date := time.Now().Format("2006-01-02") // reset the nextreviewdate to today
 	stmt, err := db.Prepare(`UPDATE words SET nextreviewdate = ?, reviewstatus = ?  WHERE word = ?`)
@@ -232,8 +232,10 @@ func resetNextReviewDate(db *sql.DB, word string) {
 	}
 	_, err = stmt.Exec(date, reviewStatus, word)
 	if err != nil {
-		fmt.Printf("Can not update %s's nextreview and reviewstatus", word)
+		fmt.Printf("Can not update %s's nextreview and reviewstatus.\n", word)
+		return
 	}
+	fmt.Printf("Word %s was reset as a NEW %s.\n", Red(word), Cyan("word"))
 }
 
 func modifyWordRecord(db *sql.DB, rec WordTableRow) {
@@ -317,7 +319,7 @@ func review(db *sql.DB, wordList []WordTableRow) {
 						index += 1
 					}
 				} else if char == 'r' { //reset the old word to new word
-					resetNextReviewDate(db, wordList[index].word)
+					resetWord(db, wordList[index].word)
 					if index >= wordsLength-1 {
 						return
 					} else {
@@ -368,7 +370,7 @@ func review(db *sql.DB, wordList []WordTableRow) {
 			}
 
 		} else if char == 'r' { //reset the old word to new word
-			resetNextReviewDate(db, wordList[index].word)
+			resetWord(db, wordList[index].word)
 			if index >= wordsLength-1 {
 				return
 			} else {
