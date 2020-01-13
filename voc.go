@@ -75,7 +75,8 @@ func readVoc(voc string) []Word {
 
 	file, err := os.Open(voc)
 	if err != nil {
-		log.Fatalf("failed opening file: %s", err)
+		fmt.Printf("Vocabulary file %s was not created by now, user %s or %s to create it.\n", Cyan(voc), Red("translate"), Red("newtrans"))
+		os.Exit(1)
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -151,8 +152,8 @@ func storeDB(db *sql.DB, words []Word) {
 	for _, word := range words {
 		if checkRecord(word.name) {
 			fmt.Printf("Word: %s already exist\n", word.name)
-			resetNextReviewDate(db, word)
-			fmt.Printf("Word: %s is reset as today's new word.\n", word.name)
+			resetNextReviewDate(db, word.name)
+			fmt.Printf("Word: %s is %s as today's new word.\n", Cyan(word.name), Red("Reset"))
 			continue
 		}
 
@@ -221,7 +222,7 @@ func updateNextReviewDate(db *sql.DB, rec WordTableRow) {
 	return
 }
 
-func resetNextReviewDate(db *sql.DB, rec Word) {
+func resetNextReviewDate(db *sql.DB, word string) {
 	reviewStatus := 0                       //reset to the first review status
 	date := time.Now().Format("2006-01-02") // reset the nextreviewdate to today
 	stmt, err := db.Prepare(`UPDATE words SET nextreviewdate = ?, reviewstatus = ?  WHERE word = ?`)
@@ -229,9 +230,9 @@ func resetNextReviewDate(db *sql.DB, rec Word) {
 		fmt.Println("Update Prepare Error")
 		panic(err)
 	}
-	_, err = stmt.Exec(date, reviewStatus, rec.name)
+	_, err = stmt.Exec(date, reviewStatus, word)
 	if err != nil {
-		fmt.Printf("Can not update %s's nextreview and reviewstatus", rec.name)
+		fmt.Printf("Can not update %s's nextreview and reviewstatus", word)
 	}
 }
 
@@ -308,14 +309,22 @@ func review(db *sql.DB, wordList []WordTableRow) {
 						index += 1
 						break
 					}
-				} else if char == 'd' {
+				} else if char == 'd' { //delete the word from db
 					deleteRecord(db, wordList[index])
 					if index >= wordsLength-1 {
 						return
 					} else {
 						index += 1
 					}
-				} else if char == 'm' {
+				} else if char == 'r' { //reset the old word to new word
+					resetNextReviewDate(db, wordList[index].word)
+					if index >= wordsLength-1 {
+						return
+					} else {
+						index += 1
+					}
+
+				} else if char == 'm' { //modify word's spell.
 					modifyWordRecord(db, wordList[index])
 					if index >= wordsLength-1 {
 						return
@@ -358,6 +367,13 @@ func review(db *sql.DB, wordList []WordTableRow) {
 				index += 1
 			}
 
+		} else if char == 'r' { //reset the old word to new word
+			resetNextReviewDate(db, wordList[index].word)
+			if index >= wordsLength-1 {
+				return
+			} else {
+				index += 1
+			}
 		} else if char == 'q' { // exit
 			return
 		}
