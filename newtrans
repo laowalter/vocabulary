@@ -6,7 +6,7 @@ else
     echo "----split----" >> ~/.word/vocabulary.txt
     trans "$*" | tee -a ~/.word/vocabulary.txt
     curdir=$(pwd)
-    cd ~/.word/
+    cd ~/samba/
     trans -no-translate -download-audio "$*"
     cd $curdir
 fi
