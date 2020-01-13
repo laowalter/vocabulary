@@ -149,9 +149,10 @@ func checkRecord(word string) bool {
 func storeDB(db *sql.DB, words []Word) {
 	/* store words list to word.db */
 	for _, word := range words {
-
 		if checkRecord(word.name) {
 			fmt.Printf("Word: %s already exist\n", word.name)
+			resetNextReviewDate(db, word)
+			fmt.Printf("Word: %s is reset as today's new word.\n", word.name)
 			continue
 		}
 
@@ -205,7 +206,7 @@ func readDB(db *sql.DB) []WordTableRow {
 }
 
 func updateNextReviewDate(db *sql.DB, rec WordTableRow) {
-	rec.reviewStatus += 1
+	rec.reviewStatus += 1 //enter next reivew series
 	nextDay := time.Now().AddDate(0, 0, fib[rec.reviewStatus])
 	fmt.Printf("Will review on %s\n", nextDay.Format("2006-01-02"))
 	stmt, err := db.Prepare(`UPDATE words SET nextreviewdate = ?, reviewstatus = ?  WHERE word = ?`)
@@ -218,6 +219,20 @@ func updateNextReviewDate(db *sql.DB, rec WordTableRow) {
 		fmt.Printf("Can not update %s's nextreview and reviewstatus", rec.word)
 	}
 	return
+}
+
+func resetNextReviewDate(db *sql.DB, rec Word) {
+	reviewStatus := 0                       //reset to the first review status
+	date := time.Now().Format("2006-01-02") // reset the nextreviewdate to today
+	stmt, err := db.Prepare(`UPDATE words SET nextreviewdate = ?, reviewstatus = ?  WHERE word = ?`)
+	if err != nil {
+		fmt.Println("Update Prepare Error")
+		panic(err)
+	}
+	_, err = stmt.Exec(date, reviewStatus, rec.name)
+	if err != nil {
+		fmt.Printf("Can not update %s's nextreview and reviewstatus", rec.name)
+	}
 }
 
 func modifyWordRecord(db *sql.DB, rec WordTableRow) {
@@ -351,6 +366,7 @@ func review(db *sql.DB, wordList []WordTableRow) {
 
 func main() {
 	storePtr := flag.Bool("store", false, "Store new words to Database")
+	listPtr := flag.Bool("list", false, "List words in ~/.words/vocabulary.txt ")
 	initPtr := flag.Bool("init", false, "Init Local database in ~/.word/words.db")
 	flag.Parse()
 
@@ -358,26 +374,26 @@ func main() {
 	dbFullPath = homeFullPath + "/words.db"
 	voc = homeFullPath + "/vocabulary.txt"
 
-	if *initPtr {
-		/* Fist time use, build a new words.db in ~/.word/ */
+	if *initPtr { // Fist time use, build a new words.db in ~/.word
 		err := os.MkdirAll(homeFullPath, os.ModePerm)
 		if err != nil {
 			fmt.Printf("Can not create directory: %s ", homeFullPath)
 		}
-
 		db := initDB(dbFullPath)
 		createTable(db)
 		creatVoc(voc)
 
-	} else if *storePtr {
-		/* store all the vocabulary from voc.txt to database */
-		var words []Word
-		words = readVoc(voc)
+	} else if *storePtr { // store all the vocabulary from voc.txt to database
+		words := readVoc(voc)
 		db := openDB(dbFullPath)
 		storeDB(db, words)
 
-	} else {
-		/* Review voc */
+	} else if *listPtr {
+		words := readVoc(voc)
+		for index, word := range words {
+			fmt.Printf("Index: %2d, Word: %s\n", index, word.name)
+		}
+	} else { // Review voc
 		db := openDB(dbFullPath)
 		wordList := readDB(db)
 		review(db, wordList)
