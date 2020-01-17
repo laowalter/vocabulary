@@ -96,7 +96,6 @@ func readVoc(voc string) []Word {
 	for n := 0; n < len(txtlines); n++ {
 		if n+1 < len(txtlines) { // not exceed the length, avoid err.
 			if txtlines[n] == SPLITLINE && txtlines[n+1] == SPLITLINE {
-				n++
 				continue
 			} else {
 				lines = append(lines, txtlines[n])
