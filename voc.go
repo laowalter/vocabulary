@@ -93,8 +93,8 @@ func readVoc(voc string) []Word {
 	var tag = false
 
 	var lines []string
-	for n := 0; n < len(txtlines); n++ {
-		if n+1 < len(txtlines) { // not exceed the length, avoid err.
+	for n := 0; n < len(txtlines); n++ { //Purge multiple continued ----split----
+		if n+1 < len(txtlines) {
 			if txtlines[n] == SPLITLINE && txtlines[n+1] == SPLITLINE {
 				continue
 			} else {
@@ -102,12 +102,8 @@ func readVoc(voc string) []Word {
 			}
 		}
 	}
-	/*
-		for i, c := range lines {
-			fmt.Printf("Index: %d, Content: %s\n", i, c)
-		}
-	*/
-	for n := 0; n < len(lines); n++ {
+
+	for n := 0; n < len(lines); n++ { //Parse
 		if lines[n] == SPLITLINE {
 			if tag {
 				words = append(words, word)
@@ -220,6 +216,25 @@ func readDB(db *sql.DB) []WordTableRow {
 		wordRecords = append(wordRecords, record)
 	}
 	return wordRecords
+}
+
+func totalWordsDB(db *sql.DB) int {
+	/* total words from table word of current date */
+	rows, err := db.Query("select * from words")
+	if err != nil {
+		panic(err)
+	}
+
+	var wordRecords []WordTableRow
+	for rows.Next() {
+		var record WordTableRow
+		err = rows.Scan(&record.word, &record.trans, &record.createDate, &record.nextReviewDate, &record.reviewStatus)
+		if err != nil {
+			panic(err)
+		}
+		wordRecords = append(wordRecords, record)
+	}
+	return len(wordRecords)
 }
 
 func updateNextReviewDate(db *sql.DB, rec WordTableRow) {
@@ -402,6 +417,7 @@ func main() {
 	storePtr := flag.Bool("store", false, "Store new words to Database")
 	listPtr := flag.Bool("list", false, "List words in ~/.words/vocabulary.txt ")
 	initPtr := flag.Bool("init", false, "Init Local database in ~/.word/words.db")
+	totalPtr := flag.Bool("total", false, "Return the total number of words in  database in ~/.word/words.db")
 	flag.Parse()
 
 	homeFullPath := os.Getenv("HOME") + "/.word"
@@ -427,10 +443,9 @@ func main() {
 		for index, word := range words {
 			fmt.Printf("Index: %2d, Word: %s\n", index, word.name)
 		}
-	} else { // Review voc
+	} else if *totalPtr {
 		db := openDB(dbFullPath)
-		wordList := readDB(db)
-		review(db, wordList)
-
+		totalNumber := totalWordsDB(db)
+		fmt.Printf("Total numbers of words in DB is  %d\n", Red(totalNumber))
 	}
 }
