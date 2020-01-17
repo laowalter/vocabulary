@@ -447,5 +447,9 @@ func main() {
 		db := openDB(dbFullPath)
 		totalNumber := totalWordsDB(db)
 		fmt.Printf("Total numbers of words in DB is  %d\n", Red(totalNumber))
+	} else {
+		db := openDB(dbFullPath)
+		wordList := readDB(db)
+		review(db, wordList)
 	}
 }
