@@ -91,19 +91,36 @@ func readVoc(voc string) []Word {
 	var words []Word
 	var word Word
 	var tag = false
+
+	var lines []string
 	for n := 0; n < len(txtlines); n++ {
-		if txtlines[n] == SPLITLINE {
+		if n+1 < len(txtlines) { // not exceed the length, avoid err.
+			if txtlines[n] == SPLITLINE && txtlines[n+1] == SPLITLINE {
+				n++
+				continue
+			} else {
+				lines = append(lines, txtlines[n])
+			}
+		}
+	}
+	/*
+		for i, c := range lines {
+			fmt.Printf("Index: %d, Content: %s\n", i, c)
+		}
+	*/
+	for n := 0; n < len(lines); n++ {
+		if lines[n] == SPLITLINE {
 			if tag {
 				words = append(words, word)
 				word.trans = ""
 				tag = false
 			}
 			n++
-			word.name = txtlines[n]
+			word.name = lines[n]
 			tag = true
 			continue
 		}
-		word.trans += txtlines[n]
+		word.trans += lines[n]
 		word.trans += "\n"
 	}
 	words = append(words, word)
