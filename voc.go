@@ -9,6 +9,7 @@ import (
 	. "github.com/logrusorgru/aurora"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -34,6 +35,8 @@ type WordTableRow struct {
 	nextReviewDate string
 	reviewStatus   int
 }
+
+type WordTableRows []WordTableRow
 
 func initDB(filePath string) *sql.DB {
 	db, err := sql.Open("sqlite3", filePath)
@@ -197,7 +200,7 @@ func openDB(dfFullPath string) *sql.DB {
 	return db
 }
 
-func readDB(db *sql.DB) []WordTableRow {
+func readDB(db *sql.DB) WordTableRows {
 	/* read words from table word of current date */
 
 	date := time.Now().Format("2006-01-02")
@@ -206,7 +209,7 @@ func readDB(db *sql.DB) []WordTableRow {
 		panic(err)
 	}
 
-	var wordRecords []WordTableRow
+	var wordRecords WordTableRows
 	for rows.Next() {
 		var record WordTableRow
 		err = rows.Scan(&record.word, &record.trans, &record.createDate, &record.nextReviewDate, &record.reviewStatus)
@@ -225,7 +228,7 @@ func totalWordsDB(db *sql.DB) int {
 		panic(err)
 	}
 
-	var wordRecords []WordTableRow
+	var wordRecords WordTableRows
 	for rows.Next() {
 		var record WordTableRow
 		err = rows.Scan(&record.word, &record.trans, &record.createDate, &record.nextReviewDate, &record.reviewStatus)
@@ -312,7 +315,7 @@ func deleteRecord(db *sql.DB, rec WordTableRow) {
 	return
 }
 
-func review(db *sql.DB, wordList []WordTableRow) {
+func review(db *sql.DB, wordList WordTableRows) {
 	wordsLength := len(wordList)
 
 	if wordsLength == 0 {
@@ -413,6 +416,32 @@ func review(db *sql.DB, wordList []WordTableRow) {
 	}
 }
 
+func shuffle(vals []int) []int {
+	/* shuffle an array */
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	ret := make([]int, len(vals))
+	perm := r.Perm(len(vals))
+	for i, randIndex := range perm {
+		ret[i] = vals[randIndex]
+	}
+	return ret
+}
+
+func (words WordTableRows) disorder() WordTableRows {
+	length := len(words)
+	var array []int
+	for i := 0; i <= length-1; i++ {
+		array = append(array, i)
+	}
+	array = shuffle(array)
+
+	var newWords WordTableRows
+	for _, order := range array {
+		newWords = append(newWords, words[order])
+	}
+	return newWords
+}
+
 func main() {
 	storePtr := flag.Bool("store", false, "Store new words to Database")
 	listPtr := flag.Bool("list", false, "List words in ~/.words/vocabulary.txt ")
@@ -449,7 +478,8 @@ func main() {
 		fmt.Printf("Total numbers of words in DB is  %d\n", Red(totalNumber))
 	} else {
 		db := openDB(dbFullPath)
-		wordList := readDB(db)
-		review(db, wordList)
+		words := readDB(db)
+		words = words.disorder()
+		review(db, words)
 	}
 }
