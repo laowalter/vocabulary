@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [  $# -eq 0 ]; then
+    exit
+else
+    curdir=$(pwd)
+    cd ~/samba/english-word
+    trans -no-translate -download-audio "$*"
+    cd $curdir
+fi
